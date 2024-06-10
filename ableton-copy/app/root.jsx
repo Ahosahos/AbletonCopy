@@ -10,6 +10,7 @@ export default function App() {
       </head>
       <body>
         <h1>SofiahTrust Interactive!</h1>
+        <h3>"Building Confidence Through Exceptional Interactivity"</h3>
         <Outlet />
         <Scripts />
       </body>

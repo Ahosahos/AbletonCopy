@@ -2,10 +2,24 @@ import { createRequestHandler } from "@remix-run/express";
 import express from "express";
 
 // notice that the result of `remix vite:build` is "just a module"
-import * as build from "./build/server/index.js";
+// import * as build from "./build/server/index.js";
+
+const VITE_DEV_SERVER =
+  process.env.NODE_ENV === "production"
+    ? null
+    : await import("vite").then((vite) =>
+        vite.createServer({
+          server: { middlewareMode: true },
+        })
+      );
 
 const app = express();
-app.use(express.static("build/client"));
+// app.use(express.static("build/client"));
+app.use(VITE_DEV_SERVER?.middlewares || express.static("build/client"));
+
+const build = VITE_DEV_SERVER
+  ? () => VITE_DEV_SERVER.ssrLoadModule("virtual:remix/server-build")
+  : await import("./build/server/index.js");
 
 // and your app is "just a request handler"
 app.all("*", createRequestHandler({ build }));
